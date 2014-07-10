@@ -1,0 +1,5 @@
+.gitattributes export-ignore  
+.gitignore export-ignore
+.gitkeep export-ignore
+Makefile export-ignore  
+addon.xml.tpl export-ignore
