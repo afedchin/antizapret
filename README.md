@@ -8,4 +8,4 @@ Library antizapret allows you to send HTTP request through proxy server to avoid
 Download
 --------
 Check out the [Releases](https://github.com/afedchin/antizapret/releases) tab to download the ZIP file.
-===========
+
