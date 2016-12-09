@@ -73,8 +73,8 @@ class AntizapretProxyHandler(urllib2.ProxyHandler, object):
         import socket
         global _custom_hosts
 
-        host = socket.gethostbyname(req.get_host().split(":")[0])
-        if self.config["server"] and (host in self.config["domains"] or host in _custom_hosts):
+        host = req.get_host().split(":")[0]
+        if self.config["server"] and (host in self.config["domains"] or socket.gethostbyname(host) in self.config["domains"] or host in _custom_hosts):
             xbmc.log("[script.module.antizapret]: Pass request through proxy " + self.config["server"], level=xbmc.LOGDEBUG)
             return urllib2.ProxyHandler.proxy_open(self, req, self.config["server"], type)
 
