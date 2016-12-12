@@ -35,31 +35,30 @@ _custom_hosts = []
 def config():
     global _config
     if not _config:
-        with shelf("antizapret.pac_config", ttl=CACHE) as pac_config:
-            if not pac_config:
+        with shelf("antizapret.pac_config", ttl=CACHE) as pac:
+            if not pac.get("value"):
                 xbmc.log("[script.module.antizapret]: Fetching Antizapret PAC file", level=xbmc.LOGNOTICE)
                 try:
-                    pac_data = urllib2.urlopen(PAC_URL).read()
+                    data = urllib2.urlopen(PAC_URL).read()
                 except:
-                    pac_data = ""
+                    data = ""
 
-                r = re.search(r"\"PROXY (.*); DIRECT", pac_data)
+                r = re.search(r"\"PROXY (.*); DIRECT", data)
+                pac["value"] = {
+                    "server": None,
+                    "domains": []
+                }
                 if r:
-                    pac_config["server"] = r.group(1)
-                    pac_config["domains"] = map(lambda x: x.replace(r"\Z(?ms)", "").replace("\\", ""), map(fnmatch.translate, re.findall(r"\"(.*?)\",", pac_data)))
-                else:
-                    pac_config["server"] = None
-                    pac_config["domains"] = []
-            _config = pac_config
+                    pac["value"]["server"] = r.group(1)
+                    pac["value"]["domains"] = map(lambda x: x.replace(r"\Z(?ms)", "").replace("\\", ""), map(fnmatch.translate, re.findall(r"\"(.*?)\",", data)))
+
+            _config = pac["value"]
     return _config
 
 def config_add(host):
-    import socket
-    global _custom_hosts
-
-    ip = socket.gethostbyname(host.split(':')[0])
-    if not ip in _custom_hosts:
-        _custom_hosts.append(ip)
+    host = host.split(':')[0]
+    if not host in _custom_hosts:
+        _custom_hosts.append(host)
 
 class AntizapretProxyHandler(urllib2.ProxyHandler, object):
     def __init__(self):
