@@ -5,9 +5,9 @@
     </requires>
     <extension point="xbmc.python.module" library="lib" />
     <extension point="xbmc.addon.repository" name="Antizapret Module Autoupdate Repository">
-        <info compressed="false">http://afedchin.github.io/repository/addons.xml</info>
-        <checksum>http://afedchin.github.io/repository/addons.xml.md5</checksum>
-        <datadir zip="true">http://afedchin.github.io/repository/</datadir>
+        <info compressed="false">https://afedchin-repo.herokuapp.com/addons.xml</info>
+        <checksum>https://afedchin-repo.herokuapp.com/addons.xml.md5</checksum>
+        <datadir zip="true">https://afedchin-repo.herokuapp.com/</datadir>
     </extension>
     <extension point="xbmc.addon.metadata">
         <platform>all</platform>
