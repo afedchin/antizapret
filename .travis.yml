@@ -1,0 +1,25 @@
+language: python
+python:
+  - 2.7
+
+git:
+  submodules: false
+
+install:
+  - pip install flake8
+
+script:
+  - flake8
+  - make
+
+deploy:
+  provider: releases
+  api_key: $GH_TOKEN
+  file:
+    - script.module.antizapret-${TRAVIS_TAG:1}.zip
+  skip_cleanup: true
+  on:
+    tags: true
+
+after_deploy:
+  - wget --retry-connrefused --no-check-certificate --debug --verbose $REPO_URL
