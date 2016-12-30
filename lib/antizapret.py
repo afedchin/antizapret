@@ -1,17 +1,27 @@
 # -*- coding: utf-8 -*-
 
-import os, re, fnmatch, threading, urllib2, xbmc
+import os
+import re
+import fnmatch
+import threading
+import urllib2
+import xbmc
+import xbmcaddon
 from contextlib import contextmanager, closing
 
-LOCKS = {}
+__addon__ = xbmcaddon.Addon()
+CACHE_DIR = xbmc.translatePath(__addon__.getAddonInfo("profile"))
 PAC_URL = "http://antizapret.prostovpn.org/proxy.pac"
-CACHE_DIR = xbmc.translatePath("special://profile/addon_data/script.module.antizapret")
 USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_8_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/34.0.1847.116 Safari/537.36"
+CACHE = 24 * 3600  # 24 hour caching
+LOCKS = {}
+_config = {}
+_custom_hosts = []
+
 
 if not os.path.exists(CACHE_DIR):
     os.makedirs(CACHE_DIR)
 
-CACHE = 24 * 3600 # 24 hour caching
 
 @contextmanager
 def shelf(filename, ttl=0):
@@ -32,8 +42,6 @@ def shelf(filename, ttl=0):
                 })
             yield d["data"]
 
-_config = {}
-_custom_hosts = []
 
 def config():
     global _config
@@ -58,19 +66,23 @@ def config():
             _config = pac["value"]
     return _config
 
+
 def config_add(host):
     host = host.split(':')[0]
-    if not host in _custom_hosts:
+    if host not in _custom_hosts:
         _custom_hosts.append(host)
 
+
 class AntizapretProxyHandler(urllib2.ProxyHandler, object):
+
     def __init__(self):
         self.config = config()
         urllib2.ProxyHandler.__init__(self, {
-            "http" : "<empty>", 
-            "https": "<empty>", 
-            "ftp"  : "<empty>", 
+            "http": "<empty>",
+            "https": "<empty>",
+            "ftp": "<empty>",
         })
+
     def proxy_open(self, req, proxy, type):
         import socket
         global _custom_hosts
@@ -82,7 +94,8 @@ class AntizapretProxyHandler(urllib2.ProxyHandler, object):
 
         return None
 
-def url_get(url, params={}, headers={}, post = None):
+
+def url_get(url, params={}, headers={}, post=None):
 
     if params:
         import urllib
@@ -108,4 +121,3 @@ def url_get(url, params={}, headers={}, post = None):
     except urllib2.HTTPError as e:
         xbmc.log("[script.module.antizapret]: HTTP Error(%s): %s" % (e.errno, e.strerror), level=xbmc.LOGERROR)
         return None
-
